@@ -1,0 +1,140 @@
+div{
+	margin:2px;
+	margin-top:7px;
+}
+
+.btn{
+	padding: 3px;
+	border-radius: 5px;
+	border: solid black 2px;
+	background-color: #AAA;
+	margin:2px;
+	 -webkit-touch-callout: none; /* iOS Safari */
+    -webkit-user-select: none; /* Safari */
+     -khtml-user-select: none; /* Konqueror HTML */
+       -moz-user-select: none; /* Firefox */
+        -ms-user-select: none; /* Internet Explorer/Edge */
+            user-select: none; /* Non-prefixed version, currently
+                                  supported by Chrome and Opera */
+}
+
+nav div{
+	display: table-cell;
+	width: 200px;
+	height: 50px;
+	vertical-align: middle;
+	font-size: 20px;
+	text-align: center;
+	font-weight: bolder;
+	margin: auto;
+	 -webkit-touch-callout: none; /* iOS Safari */
+    -webkit-user-select: none; /* Safari */
+     -khtml-user-select: none; /* Konqueror HTML */
+       -moz-user-select: none; /* Firefox */
+        -ms-user-select: none; /* Internet Explorer/Edge */
+            user-select: none;
+
+}
+
+nav div:hover{
+	background-color: #AAA;
+}
+
+nav div:active{
+	background-color: #999;
+}
+
+nav{
+	background-color: #DDD;
+}
+
+.hidden{
+	display: none;
+	visibility: hidden;
+}
+
+.editMode.hidden{
+	display: inherit;
+	visibility: visible;
+}
+
+.editMode{
+	visibility: visible;
+	border: 2px orange solid;
+}
+
+.editedSuccessfully{
+	visibility: visible;
+	border: 2px green solid;
+}
+.page.selected{
+	display: block;
+}
+.page{
+	display: none;
+}
+
+/* The Modal (background) */
+.modal {
+    display: none; /* Hidden by default */
+    position: fixed; /* Stay in place */
+    z-index: 1; /* Sit on top */
+    left: 0;
+    top: 0;
+    width: 100%; /* Full width */
+    height: 100%; /* Full height */
+    overflow: auto; /* Enable scroll if needed */
+    background-color: rgb(0,0,0); /* Fallback color */
+    background-color: rgba(0,0,0,0.4); /* Black w/ opacity */
+}
+
+/* Modal Content/Box */
+.modal-content {
+    background-color: #fefefe;
+    margin: 15% auto; /* 15% from the top and centered */
+    padding: 5px;
+    border: 1px solid #888;
+    width: 80%; /* Could be more or less, depending on screen size */
+}
+
+/* The Close Button */
+.close {
+    color: #aaa;
+    float: right;
+    font-size: 28px;
+    font-weight: bold;
+}
+
+.close:hover,
+.close:focus {
+    color: black;
+    text-decoration: none;
+    cursor: pointer;
+}
+
+
+select{
+	width: 250px;
+	margin-bottom: 10px;
+}
+
+.btn:hover{
+	background-color: #BBB;
+}
+
+.btn:active{
+	background-color: #CCC;
+	border-color: green;
+	color: green;
+}
+
+.error{
+	color: red;
+	border-color: red;
+}
+
+input{
+	border-radius: 5px 5px 5px 5px;
+	border: solid #aaa 2px;
+	padding: 3px;
+}

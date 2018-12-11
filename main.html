@@ -1,0 +1,398 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>Keyforge League</title>
+	<link rel="stylesheet" type="text/css" href="main.css">
+
+	<nav>
+		<div id="nav-players">Players</div>
+		<div id="nav-decks">Decks</div>
+		<div id="nav-tournaments">Tournaments</div>
+	</nav>
+</head>
+<body>
+	<div id="players" class="page selected">
+		<div id="players-list">
+			<select id="players-list-select" size=15>
+				<option>Loading Players</option>
+			</select>
+			<br>
+			<span id="players-load-btn" class="btn">Load Players</span>
+			<span id="players-remove-btn" class="btn">Remove Selected Player</span>
+			<span id="players-edit-btn" class="btn">Edit Player Info</span>
+		</div>
+		<div id="players-add">
+			<h3>Add Player</h3>
+			<input id="players-add-name"  type="text" placeholder="Player's Name">
+			<input id="players-add-phone" type="text" placeholder="Player's Phone">
+			<input id="players-add-email" type="text" placeholder="Player's Email">
+			<span id="players-add-btn" class="btn">Save</span>
+			<span id="players-cancel-btn" class="btn">Cancel</span>
+		</div>
+		<!-- Edit Players Popup -->
+		<div id="players-edit-popup" class="modal">
+			<div id="players-edit-popup-content" class="modal-content">
+				<h3>Edit Player</h3>
+				<input id="players-edit-name"  type="text" placeholder="Player's Name">
+				<input id="players-edit-phone" type="text" placeholder="Player's Phone">
+				<input id="players-edit-email" type="text" placeholder="Player's Email">
+				<span id="players-edit-save-btn" class="btn">Save</span>
+				<span id="players-edit-cancel-btn" class="btn">Cancel</span>
+			</div>
+		</div>
+	</div>
+	<div id="decks" class="page">
+		<div id="decks-list">
+			<select id="decks-list-select" size=15>
+				<option>Loading Decks</option>
+			</select>
+			<br>
+			<span id="decks-load-btn" class="btn">Load Decks</span>
+			<span id="decks-remove-btn" class="btn">Remove Deck</span>
+			<span id="decks-edit-btn" class="btn">Edit Deck</span>
+		</div>
+
+		<div id="decks-add">
+			<h3>Add Deck</h3>
+			<h4 id="decks-add-edit-mode" class="hidden">Edit Mode On</h4>
+			<input id="decks-add-name"  class="deck-info" type="text" placeholder="Deck Name">
+			<select id="decks-add-faction1" class="deck-info">
+				<option>Brobnar</option>
+				<option>Dis</option>
+				<option>Logos</option>
+				<option>Mars</option>
+				<option>Sanctum</option>
+				<option>Shadows</option>
+				<option>Untamed</option>
+			</select>
+			<select id="decks-add-faction2" class="deck-info">
+				<option>Brobnar</option>
+				<option>Dis</option>
+				<option>Logos</option>
+				<option>Mars</option>
+				<option>Sanctum</option>
+				<option>Shadows</option>
+				<option>Untamed</option>
+			</select>
+			<select id="decks-add-faction3" class="deck-info">
+				<option>Brobnar</option>
+				<option>Dis</option>
+				<option>Logos</option>
+				<option>Mars</option>
+				<option>Sanctum</option>
+				<option>Shadows</option>
+				<option>Untamed</option>
+			</select>
+			<input id="decks-add-qrcode" class="deck-info" type="file" placeholder="QR Code">
+			<span id="decks-add-btn" class="btn">Save</span>
+			<span id="decks-cancel-btn" class="btn">Cancel</span>
+		</div>
+	</div>
+	<div id="tournaments">
+		<div id="tournaments-list"></div>
+		<div id="tournaments-add"></div>
+		<div id="tournaments-remove"></div>
+		<div id="tournaments-view"></div>
+	</div>
+
+	
+
+	<script type="text/javascript">
+		window.addEventListener('load', loadPlayers);
+		window.addEventListener('load', loadDecks);
+
+		//Handle pop-up closing
+		// This needs more logic once we add deck editing
+		window.addEventListener('click', (e)=>{
+			let editbox = $("players-edit-popup");
+			//console.log(e.target);
+			if (e.target == editbox) {
+				closePopup(editbox);
+			}
+		})
+		
+		//nav button attachments
+		$('nav-players').addEventListener('click', () => setPage('nav-players') );
+		$('nav-decks').addEventListener('click', () => setPage('nav-decks') );
+		$('nav-tournaments').addEventListener('click', () => setPage('nav-tournaments') );
+
+		//players button attachments
+		$('players-add-btn').addEventListener('click', addPlayer);
+		$('players-load-btn').addEventListener('click', loadPlayers);
+		$('players-edit-btn').addEventListener('click', editPlayer);
+		$('players-remove-btn').addEventListener('click', removePlayer);
+
+		//players edit button attachments
+		$('players-edit-save-btn').addEventListener('click', editPlayerSave);
+		$('players-edit-cancel-btn').addEventListener('click', ()=>{
+			closePopup($("players-edit-popup"));
+		});
+
+		//deck button attachments
+		$('decks-add-btn').addEventListener('click', addDeck);
+		$('decks-load-btn').addEventListener('click', loadDecks);
+		$('decks-remove-btn').addEventListener('click', removeDeck);
+
+
+		function closePopup(el){
+			console.log(el);
+			el.style.display = "none";
+		}
+
+
+
+		let players = [];
+		let editMode = false;
+
+		function setPage(id){
+			selectedEls = document.getElementsByClassName('selected');
+			selectedEls[0].classList.remove('selected');
+			$(id.split('-')[1]).classList.add('selected');
+		}
+
+		//S:Player Functions
+		function addPlayer(){
+			let player = {
+				name: $('players-add-name').value,
+				phone: $('players-add-phone').value,
+				email: $('players-add-email').value,
+			}
+
+			let formData = new FormData();
+
+			let keys = Object.keys(player);
+			console.log(keys);
+			keys.forEach(key =>{
+				formData.append(key, player[key]);
+			});
+
+			var xmlhttp = new XMLHttpRequest();
+			xmlhttp.onreadystatechange = function() {
+				if (this.readyState == 4 && this.status == 200) {
+					switch(this.responseText){
+						case "tooShort":
+							alert('Player Name Too Short');
+							break;
+						case "duplicate":
+							alert('Player Already Exists (by email)');
+							break;
+						case "success":
+							console.log('player added successfully');
+							break;
+					}
+					loadPlayers();
+					console.log('Response: ', this.responseText);
+				}
+			};
+			xmlhttp.open("POST", "submit.js?q=addPlayer", true);
+			xmlhttp.send(formData);
+			}
+
+		function removePlayer(){
+			let player = findPlayerByName($('players-list-select').value);
+			let index = players.indexOf(player);
+			console.log('got here', player, index);
+
+			let xmlhttp = new XMLHttpRequest();
+			xmlhttp.onreadystatechange = function() {
+				if (this.readyState == 4 && this.status == 200) {
+					loadPlayers();
+				}
+			};
+	        xmlhttp.open("GET", "submit.js?q=removePlayer?|index="+index, true);
+	        xmlhttp.send();
+		}
+
+		function loadPlayers(){
+			let xmlhttp = new XMLHttpRequest();
+			xmlhttp.onreadystatechange = function() {
+				if (this.readyState == 4 && this.status == 200) {
+					players = JSON.parse(this.responseText);
+
+					let str = '';
+					players.forEach(player => {
+						str += '<option>'+player.name+'</option>\n'
+					});
+					$('players-list-select').innerHTML = str;
+				}
+			};
+	        xmlhttp.open("GET", "submit.js?q=loadPlayers", true);
+	        xmlhttp.send();
+		}
+
+		//TODO FIX EDIT PLAYER DOESN'T WORK RIGHT NOW
+		//Potentially add popup for this
+		function editPlayer(){
+			if(!$("players-list-select").value){
+				return;
+			}
+
+			let player = findPlayerByName($("players-list-select").value);
+
+			$('players-edit-name').value = player.name;
+			$('players-edit-phone').value = player.phone;
+			$('players-edit-email').value = player.email;
+
+			var editbox = document.getElementById('players-edit-popup');
+
+			// When the user clicks on the button, open popup
+		    editbox.style.display = "block";
+		}
+
+		function editPlayerSave(){
+			let formData = new FormData;
+
+			let player = findPlayerByName($("players-list-select").value);
+
+			let keys = Object.keys(player);
+			let editedPlayer = {};
+			//copy player and append old player
+			keys.forEach(key=>{
+				formData.append('old' + key, player[key]);
+				editedPlayer[key] = player[key];
+			});
+
+			editedPlayer['name'] = $('players-edit-name').value;
+			editedPlayer['phone'] = $('players-edit-phone').value;
+			editedPlayer['email'] = $('players-edit-email').value;
+
+			//append new player
+			keys.forEach(key=>{
+				formData.append(key, editedPlayer[key]);
+			})
+
+			var xmlhttp = new XMLHttpRequest();
+			xmlhttp.onreadystatechange = function() {
+				if (this.readyState == 4 && this.status == 200) {
+					loadPlayers();
+					if(this.responseText == "badEmail"){
+						alert('Old Email was not found!');
+						closePopup($("players-edit-popup"));
+						return;
+					}else if(this.responseText == "duplicateEmail"){
+						alert('New Email is a duplicate!');
+						closePopup($("players-edit-popup"));
+						return;
+					}
+					console.log('Response: ', this.responseText);
+					closePopup($("players-edit-popup"));
+				}
+			};
+			xmlhttp.open("POST", "submit.js?q=editPlayer", true);
+			xmlhttp.send(formData);
+		}
+
+		function cancelEditPlayer(){
+			$('players-add-name').classList.remove('editMode');
+			$('players-add-phone').classList.remove('editMode');
+			$('players-add-email').classList.remove('editMode');
+			$('players-add-edit-mode').classList.remove('editMode');
+
+			editMode = false;
+		}
+
+		function findPlayerByName(name){
+			let foundPlayer = null;
+			players.forEach(player =>{
+				if(player.name == name){
+					foundPlayer = player;
+				}
+			});
+			return foundPlayer;
+		}
+
+		//S:Deck Functions
+		function addDeck(){
+			let deck = {
+				name: $('decks-add-name').value,
+				faction1: $('decks-add-faction1').value,
+				faction2: $('decks-add-faction2').value,
+				faction3: $('decks-add-faction3').value
+			};
+
+			let qrCode = $('decks-add-qrcode').files[0];
+
+			let formData = new FormData();
+
+			let keys = Object.keys(deck);
+			console.log(keys);
+			keys.forEach(key =>{
+				formData.append(key, deck[key]);
+			})
+			// formData.append('name', deck.name);
+			// formData.append('faction1', deck.faction1);
+			// formData.append('faction2', deck.faction2);
+			// formData.append('faction3', deck.faction3);
+			formData.append('file', qrCode);
+
+			let xmlhttp = new XMLHttpRequest();
+			xmlhttp.onreadystatechange = function() {
+				if (this.readyState == 4 && this.status == 200) {
+					loadDecks();
+					console.log('Response: ', this.responseText);
+				}
+			};
+			xmlhttp.open("POST", "submit.js?q=addDeck", true);
+			xmlhttp.send(formData);		
+		}
+
+		function removeDeck(){
+			let deck = $('decks-list-select').value;
+
+			let formData = new FormData();
+			formData.append('name', deck);
+
+			let xmlhttp = new XMLHttpRequest();
+			xmlhttp.onreadystatechange = function() {
+				if (this.readyState == 4 && this.status == 200) {
+					loadDecks();
+					console.log('Response: ', this.responseText);
+				}
+			};
+			xmlhttp.open("POST", "submit.js?q=removeDeck", true);
+			xmlhttp.send(formData);	
+		}
+
+		function loadDecks(){
+			$('decks-list-select').innerHTML = '<option>Loading</option>'
+			let xmlhttp = new XMLHttpRequest();
+			xmlhttp.onreadystatechange = function() {
+				if (this.readyState == 4 && this.status == 200) {
+					decks = JSON.parse(this.responseText);
+
+					let str = '';
+					decks.forEach(deck => {
+						str += '<option>'+deck.name+'</option>\n'
+					});
+					$('decks-list-select').innerHTML = str;
+				}
+			};
+	        xmlhttp.open("GET", "submit.js?q=loadDecks", true);
+	        xmlhttp.send();
+		}
+
+		//TODO
+		function editDeck(){
+
+		}
+
+		// $('test').addEventListener('click', () => submitQuery());
+		
+		// function submitQuery(){
+			// var xmlhttp = new XMLHttpRequest();
+	  //       xmlhttp.onreadystatechange = function() {
+	  //           if (this.readyState == 4 && this.status == 200) {
+	  //               $('test').innerHTML = this.responseText;
+	  //               console.log(this.responseText);
+	  //           }
+	  //       };
+	  //       xmlhttp.open("GET", "submit.php?q=test%20question", true);
+	  //       xmlhttp.send();
+		// }
+
+		function $(id){
+			return document.getElementById(id);
+		}
+	</script>
+</body>
+</html>

@@ -1,0 +1,22 @@
+List of players
+	Add Player
+	Remove Player
+	Edit Player
+List of decks
+	Add Deck
+	Remove Deck
+	Edit Deck
+
+Player Standings
+	Display Standings
+	Display History
+Deck Standings
+	Display Standings
+	Display History
+Handicap Bidding
+	Place Bid
+	Calc
+Tournament Bracket
+	Add player with deck
+	Remove player with deck
+	Conessions
